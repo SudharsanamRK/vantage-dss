@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    /* Pure, clean background with a very subtle professional grid */
+    @apply bg-slate-50 text-slate-800 font-mono antialiased;
+    background-image: 
+      radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 80%),
+      linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);
+    background-size: 100% 100%, 30px 30px, 30px 30px;
+  }
+}
+
+/* Updated for White Theme */
+.glass-panel {
+  @apply bg-white border border-slate-200 shadow-sm shadow-slate-200/50 backdrop-blur-md;
+}
+
+.shadow-neon {
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.15);
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }

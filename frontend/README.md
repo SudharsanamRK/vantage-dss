@@ -1,0 +1,2 @@
+Vantage: Digital Twin Engine
+Vantage is a next-generation aquaculture management platform that uses a centralized "Logic Core" to synchronize biological data, water chemistry, and financial forecasting. Unlike traditional dashboards, operates as a Digital Twin, simulating farm outcomes in real-time based on sensor inputs and infrastructure configurations.
