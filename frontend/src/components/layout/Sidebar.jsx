@@ -3,109 +3,74 @@ import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, Zap, Bell, FileText, Scale, BarChart3, 
   Map as MapIcon, Activity, IndianRupee, Settings,
-  Menu, ChevronLeft, Terminal
+  Menu, ChevronLeft
 } from "lucide-react";
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
 
-  // Navigation configuration matching your dashboard modules
   const nav = [
-    { to: "/", icon: <LayoutDashboard size={20} />, label: "Dashboard" },
-    { to: "/map", icon: <MapIcon size={20} />, label: "Spatial" },
-    { to: "/feeding", icon: <Zap size={20} />, label: "Bio-Logic" },
-    { to: "/stock", icon: <Scale size={20} />, label: "Stock Pulse" },
-    { to: "/simulator", icon: <BarChart3 size={20} />, label: "Harvest Sim" },
-    { to: "/health", icon: <Activity size={20} />, label: "Health Doctor" },
-    { to: "/economics", icon: <IndianRupee size={20} />, label: "Economics" },
-    { to: "/setup", icon: <Settings size={20} />, label: "Farm Setup" },
-    { to: "/alerts", icon: <Bell size={20} />, label: "Signals" },
-    { to: "/reports", icon: <FileText size={20} />, label: "Archive" },
+    { to: "/", icon: <LayoutDashboard size={18} />, label: "Dashboard" },
+    { to: "/map", icon: <MapIcon size={18} />, label: "Ponds" },
+    { to: "/feeding", icon: <Zap size={18} />, label: "Feeding" },
+    { to: "/stock", icon: <Scale size={18} />, label: "Biomass" },
+    { to: "/simulator", icon: <BarChart3 size={18} />, label: "Harvest" },
+    { to: "/health", icon: <Activity size={18} />, label: "Health" },
+    { to: "/economics", icon: <IndianRupee size={18} />, label: "Finance" },
+    { to: "/setup", icon: <Settings size={18} />, label: "Setup" },
+    { to: "/alerts", icon: <Bell size={18} />, label: "Alerts" },
+    { to: "/reports", icon: <FileText size={18} />, label: "Logbook" },
   ];
 
   return (
     <aside 
-      className={`sticky top-0 z-50 flex h-screen flex-col bg-white border-r border-slate-200 transition-all duration-500 ease-in-out shadow-2xl ${
-        isCollapsed ? "w-20" : "w-72"
-      }`}
+      /* Reduced width from 260px to 200px to remove dead space */
+      style={{ width: isCollapsed ? "70px" : "200px" }}
+      className="sticky top-0 z-50 flex h-screen flex-col bg-[#fcfdfc] border-r border-stone-300 shadow-sm transition-all duration-200"
     >
-      {/* TOGGLE BUTTON: Floating action to collapse/expand */}
+      {/* FLAT TOGGLE BUTTON */}
       <button 
         onClick={() => setIsCollapsed(!isCollapsed)}
-        className="absolute -right-3 top-10 bg-slate-900 text-white p-1.5 rounded-full border-4 border-white hover:scale-110 transition-transform z-[60] shadow-md"
+        className="absolute -right-3 top-10 bg-green-700 text-white p-1 border border-stone-300 z-[70] hover:bg-green-800 cursor-pointer"
+        title={isCollapsed ? "Expand" : "Collapse"}
       >
         {isCollapsed ? <Menu size={14} /> : <ChevronLeft size={14} />}
       </button>
 
-      {/* BRANDING SECTION: Vantage Identity */}
-      <div className={`mt-8 mb-12 transition-all duration-500 flex flex-col ${isCollapsed ? "items-center" : "px-10"}`}>
-        <h1 className={`font-black italic text-slate-900 uppercase leading-none transition-all duration-500 ${isCollapsed ? "text-2xl" : "text-3xl tracking-[-0.1em]"}`}>
+      {/* BRANDING SECTION - Center aligned */}
+      <div className={`mt-10 mb-8 flex items-center ${isCollapsed ? "justify-center" : "px-6"}`}>
+        <h1 className="font-bold text-[#1a2e1a] text-lg tracking-tight uppercase">
           {isCollapsed ? "V" : "VANTAGE"}
         </h1>
-        {!isCollapsed && (
-          <span className="block text-[6px] font-black tracking-[0.3em] text-blue-600 mt-2 ml-0.5 opacity-90 whitespace-nowrap uppercase">
-            Precision Aquaculture Intelligence
-          </span>
-        )}
       </div>
 
-      {/* NAVIGATION: Main links with centered active state logic */}
-      <nav className="flex-1 space-y-2 overflow-y-auto overflow-x-hidden px-3 custom-scrollbar">
+      {/* NAVIGATION LIST */}
+      <nav className="flex-1 space-y-0.5 overflow-y-auto px-2">
         {nav.map((item) => (
-          <NavLink
-            key={item.label}
-            to={item.to}
-            className={({ isActive }) =>
-              `flex items-center rounded-2xl transition-all duration-300 group relative ${
-                isCollapsed 
-                  ? "justify-center h-12 w-12 mx-auto" // Perfect centered square when collapsed
-                  : "px-4 py-3 gap-4 mx-2"            // Spacious row when expanded
-              } ${
-                isActive
-                  ? "bg-slate-900 text-white shadow-lg shadow-slate-200"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
-              }`
-            }
+          <NavLink 
+            key={item.label} 
+            to={item.to} 
+            className={({ isActive }) => `
+              no-underline flex items-center py-2.5 px-3 transition-none
+              ${isActive 
+                ? "bg-green-700 text-white" 
+                : "text-stone-600 hover:bg-stone-200 hover:text-black"}
+            `}
           >
-            {/* ICON: Subtle rotation on hover for expanded state */}
-            <div className={`shrink-0 transition-transform duration-300 ${!isCollapsed && "group-hover:rotate-12"}`}>
+            <div className={`shrink-0 ${isCollapsed ? "mx-auto" : "ml-1"}`}>
               {item.icon}
             </div>
             
-            {/* LABEL: Hidden during collapse, animated entrance */}
             {!isCollapsed && (
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] whitespace-nowrap transition-opacity duration-300">
+              <span className="ml-3 text-[13px] font-semibold whitespace-nowrap">
                 {item.label}
               </span>
-            )}
-
-            {/* TOOLTIP: Only visible when the sidebar is minimized */}
-            {isCollapsed && (
-              <div className="absolute left-16 bg-slate-900 text-white text-[8px] font-bold px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl border border-white/10">
-                {item.label}
-              </div>
             )}
           </NavLink>
         ))}
       </nav>
-      
-      {/* OPERATOR INFO / NODE STATUS: Bottom anchor */}
-      <div className={`transition-all duration-500 overflow-hidden ${
-        isCollapsed ? "h-0 opacity-0 mb-0" : "h-auto p-5 m-6 bg-slate-50 rounded-[2rem] border border-slate-100"
-      }`}>
-        <div className="flex items-center gap-2 mb-2">
-          <Terminal size={12} className="text-blue-500" />
-          <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
-            Node Integrity: 99%
-          </p>
-        </div>
-        <div className="flex items-center justify-between">
-            <p className="text-[10px] font-black text-slate-700 font-mono tracking-tighter">
-              PND_ALPHA_01
-            </p>
-            <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
-        </div>
-      </div>
+
+      <div className="pb-4" />
     </aside>
   );
 }
