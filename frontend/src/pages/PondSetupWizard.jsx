@@ -563,12 +563,34 @@ export default function PondSetupWizard() {
         </p>
       </div>
 
-      {/* ── Progress bar ── */}
-      <div className="w-full h-1 bg-slate-200">
-        <div
-          className="h-1 bg-green-600 transition-all duration-500"
-          style={{ width: `${progress}%` }}
-        />
+      {/* ── Enhanced progress bar with step dots ── */}
+      <div className="bg-white border-b border-slate-100 px-8 py-3">
+        {/* Percentage bar */}
+        <div className="w-full h-1 bg-slate-100 mb-3">
+          <div className="h-1 bg-green-600 transition-all duration-500" style={{ width: `${progress}%` }} />
+        </div>
+        {/* Step dots */}
+        <div className="hidden md:flex items-center justify-between">
+          {STEPS.map(s => {
+            const done    = s.id < step;
+            const active  = s.id === step;
+            const Icon    = s.icon;
+            return (
+              <div key={s.id} className="flex flex-col items-center gap-1 flex-1">
+                <div className={`w-6 h-6 flex items-center justify-center transition-all
+                  ${done   ? "bg-green-600 text-white"
+                  : active ? "bg-green-700 text-white ring-2 ring-green-300"
+                  :          "bg-slate-100 text-slate-300"}`}>
+                  {done ? <Check size={10} /> : <Icon size={10} />}
+                </div>
+                <p className={`text-[8px] font-black uppercase tracking-wide leading-none text-center
+                  ${active ? "text-green-700" : done ? "text-green-500" : "text-slate-300"}`}>
+                  {s.label}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className="flex flex-1 overflow-hidden">

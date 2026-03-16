@@ -90,6 +90,10 @@ const pondSchema = new mongoose.Schema({
   // Setup completion flag
   setupComplete: { type: Boolean, default: false },
 
+  // ── IoT Device fields ──────────────────────────────────────────────────────
+  deviceId: { type: String, default: null },   // ESP32 device identifier
+  apiKey:   { type: String, default: null },   // shared secret for sensor auth
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Pond", pondSchema);

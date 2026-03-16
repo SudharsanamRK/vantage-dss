@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import { AuthProvider }   from "./context/AuthContext";
+import { ThemeProvider }  from "./context/ThemeContext";
 import { PondProvider }   from "./context/PondContext";
 import ProtectedRoute     from "./components/ProtectedRoute";
 import Login              from "./pages/Login";
@@ -10,10 +11,11 @@ import PondSetupWizard    from "./pages/PondSetupWizard";
 
 import Sidebar            from "./components/layout/Sidebar";
 import Topbar             from "./components/layout/Topbar";
+import QuickWaterWidget   from "./components/ui/QuickWaterWidget";
+import AIChatWidget       from "./components/ui/AIChatWidget";
 
 import Dashboard          from "./pages/Dashboard";
 import FeedingAdvisor     from "./pages/FeedingAdvisor";
-import StockPulse         from "./pages/StockPulse";
 import Alerts             from "./pages/Alerts";
 import Reports            from "./pages/Reports";
 import HarvestSimulator   from "./pages/HarvestSimulator";
@@ -41,7 +43,6 @@ function PondGate({ children }) {
     );
   }
 
-  // No ponds yet → show full setup wizard
   if (ponds.length === 0) return <PondSetupWizard />;
 
   return children;
@@ -61,7 +62,6 @@ function AppShell() {
                 <Route path="/"          element={<Dashboard />} />
                 <Route path="/map"       element={<PondMap />} />
                 <Route path="/feeding"   element={<FeedingAdvisor />} />
-                <Route path="/stock"     element={<StockPulse />} />
                 <Route path="/simulator" element={<HarvestSimulator />} />
                 <Route path="/alerts"    element={<Alerts />} />
                 <Route path="/reports"   element={<Reports />} />
@@ -71,6 +71,8 @@ function AppShell() {
                 <Route path="*"          element={<Navigate to="/" replace />} />
               </Routes>
             </main>
+            <QuickWaterWidget />
+            <AIChatWidget />
           </div>
         </div>
       </PondGate>
@@ -80,6 +82,7 @@ function AppShell() {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -96,5 +99,6 @@ export default function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </ThemeProvider>
   );
 }

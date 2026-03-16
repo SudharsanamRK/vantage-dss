@@ -5,8 +5,13 @@ import {
   Plus, Zap, AlertTriangle, ChevronRight, Settings,
   Activity, TrendingUp, Fish, Clock, Leaf, Calendar,
   ShieldCheck, ShieldAlert, ShieldX, Thermometer, Wind,
-  FlaskConical
+  FlaskConical, Scale, AlertCircle as AlertCircleIcon
 } from "lucide-react";
+import SensorHistoryCharts from "../components/ui/SensorHistoryCharts";
+import AbwSamplerModal     from "../components/ui/AbwSamplerModal";
+import MortalityModal      from "../components/ui/MortalityModal";
+import { CompleteHarvestModal, CycleHistoryPanel } from "../components/ui/CycleHistory";
+import WeatherWidget       from "../components/ui/WeatherWidget";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function fmt(val, fallback = "—") {
@@ -150,8 +155,11 @@ function FeedBadge({ advice }) {
 
 // ─── Main Dashboard ───────────────────────────────────────────────────────────
 export default function Dashboard() {
-  const { sensorData, logs, addLog, brain, farmConfig } = usePond();
-  const [showLogModal, setShowLogModal] = useState(false);
+  const { sensorData, logs, addLog, brain, farmConfig, doc: docCtx } = usePond();
+  const [showLogModal,     setShowLogModal]     = useState(false);
+  const [showAbw,          setShowAbw]          = useState(false);
+  const [showMortality,    setShowMortality]    = useState(false);
+  const [showHarvest,      setShowHarvest]      = useState(false);
 
   const sd = sensorData || {};
   const b  = brain     || {};
@@ -182,18 +190,14 @@ export default function Dashboard() {
     : sd.ph > 9  ? "warn"
     : "ok";
 
-  // DOC — days since culture start (mock, replace with real startDate from farmConfig)
-  const DOC = fc.startDate
-    ? Math.floor((Date.now() - new Date(fc.startDate)) / 86400000)
-    : 45; // placeholder
+  // DOC — use real doc from context (calculated from stockingDate)
+  const DOC = docCtx || fc.doc || 0;
 
-  // Biomass estimate from growth module
-  const biomassKg = fc.size && fc.density
-    ? ((fc.size * fc.density * 0.025)).toFixed(0)
-    : "—";
+  // Biomass — use real brain calculation
+  const biomassKg = b.currentBiomassKg ? b.currentBiomassKg.toFixed(1) : "—";
 
-  // Harvest countdown (typical 120-day cycle)
-  const harvestDay    = 120;
+  // Harvest countdown — use real target days from wizard
+  const harvestDay    = fc.targetHarvestDays || 120;
   const daysLeft      = Math.max(0, harvestDay - DOC);
   const harvestPct    = Math.min(100, Math.round((DOC / harvestDay) * 100));
 
@@ -206,22 +210,42 @@ export default function Dashboard() {
           <nav className="text-[10px] text-slate-400 uppercase tracking-widest font-black mb-1">
             Assets / Ponds / {sd.label || "—"}
           </nav>
-          <h1 className="text-2xl font-light text-slate-800 tracking-tight">
-            Dashboard: <span className="font-semibold text-slate-900">{sd.label || "No Pond Selected"}</span>
+          <h1 className="text-3xl font-light text-slate-800 tracking-tight">
+            Dashboard: <span className="font-black text-slate-900">{sd.label || "No Pond Selected"}</span>
           </h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button
-            onClick={() => { addLog("Manual Inspection", "Operator"); setShowLogModal(false); }}
-            className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50 active:scale-95 transition-all rounded-sm shadow-sm"
+            onClick={() => setShowAbw(true)}
+            className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-2 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
           >
-            <Plus size={15} /> Add Log
+            <Scale size={13} /> ABW Sample
           </button>
-          <button className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 text-sm font-bold hover:bg-green-800 active:scale-95 shadow-sm transition-all rounded-sm">
-            <Zap size={15} /> Quick Action
+          <button
+            onClick={() => setShowMortality(true)}
+            className="flex items-center gap-2 bg-white border border-red-200 px-3 py-2 text-[11px] font-black uppercase tracking-widest text-red-600 hover:bg-red-50 transition-colors shadow-sm"
+          >
+            <AlertCircleIcon size={13} /> Mortality
+          </button>
+          <button
+            onClick={() => addLog("Manual Inspection", "Operator")}
+            className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
+          >
+            <Plus size={13} /> Add Log
+          </button>
+          <button
+            onClick={() => setShowHarvest(true)}
+            className="flex items-center gap-2 bg-green-700 text-white px-5 py-2 text-[11px] font-black uppercase tracking-widest hover:bg-green-800 shadow-sm transition-colors"
+          >
+            <Zap size={13} /> Quick Action
           </button>
         </div>
       </div>
+
+      {/* ── Modals ── */}
+      {showAbw       && <AbwSamplerModal        onClose={() => setShowAbw(false)} />}
+      {showMortality && <MortalityModal          onClose={() => setShowMortality(false)} />}
+      {showHarvest   && <CompleteHarvestModal    onClose={() => setShowHarvest(false)} />}
 
       {/* ── KPI STAT CARDS ── */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
@@ -398,10 +422,16 @@ export default function Dashboard() {
               </div>
             </div>
           </div>
+
+          {/* SENSOR HISTORY CHARTS */}
+          <SensorHistoryCharts />
         </div>
 
         {/* RIGHT: 4 cols */}
         <div className="lg:col-span-4 space-y-6">
+
+          {/* WEATHER */}
+          <WeatherWidget location={fc.location || ""} />
 
           {/* POND HEALTH SCORE */}
           <div className="bg-[#1e293b] text-white rounded-sm shadow-lg border-l-4 border-emerald-500 overflow-hidden">
@@ -515,6 +545,17 @@ export default function Dashboard() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* CYCLE HISTORY */}
+          <div className="bg-white border border-slate-200 rounded-sm shadow-sm overflow-hidden">
+            <div className="bg-slate-50 border-b border-slate-200 px-5 py-3 flex items-center gap-2">
+              <TrendingUp size={13} className="text-emerald-600" />
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-700">Cycle History</h3>
+            </div>
+            <div className="p-4">
+              <CycleHistoryPanel />
             </div>
           </div>
 

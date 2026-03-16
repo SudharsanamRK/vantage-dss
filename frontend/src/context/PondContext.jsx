@@ -54,7 +54,14 @@ export const PondProvider = ({ children }) => {
 
   const farmConfig = {
     ...pondConfig,
-    startDate: activePond?.stockingDate ?? activePond?.createdAt ?? null,
+    startDate:   activePond?.stockingDate ?? activePond?.createdAt ?? null,
+    location:    activePond?.location     ?? "",
+    farmName:    activePond?.farmName     ?? "",
+    ownerName:   activePond?.ownerName    ?? "",
+    cultureType: activePond?.cultureType  ?? "Semi-intensive",
+    waterType:   activePond?.waterType    ?? "Freshwater",
+    feedingFrequency: activePond?.feedingFrequency ?? 4,
+    waterExchange:    activePond?.waterExchange    ?? "",
   };
 
   const brain = analyzePond(
@@ -155,12 +162,92 @@ export const PondProvider = ({ children }) => {
     }, ...prev]);
   };
 
+  // ── ABW Sampling ───────────────────────────────────────────────────────────
+  const logAbwSample = async (weights, notes = "") => {
+    const token = getToken();
+    const res   = await fetch(`${BASE}/abw`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body:    JSON.stringify({ pondId: activePond?._id, weights, notes }),
+    });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.message);
+    // Refresh ponds so avgWeight is updated
+    fetchAllPonds();
+    return result;
+  };
+
+  const getAbwHistory = async (pondId) => {
+    const token = getToken();
+    const res   = await fetch(`${BASE}/abw/${pondId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  };
+
+  // ── Mortality Logging ──────────────────────────────────────────────────────
+  const logMortality = async (count, cause = "Unknown", notes = "") => {
+    const token = getToken();
+    const res   = await fetch(`${BASE}/mortality`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body:    JSON.stringify({ pondId: activePond?._id, count, cause, notes }),
+    });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.message);
+    fetchAllPonds(); // updates survivalEstimate on pond
+    return result;
+  };
+
+  const getMortalityHistory = async (pondId) => {
+    const token = getToken();
+    const res   = await fetch(`${BASE}/mortality/${pondId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  };
+
+  // ── Cycle History ──────────────────────────────────────────────────────────
+  const completeCycle = async (data) => {
+    const token = getToken();
+    const res   = await fetch(`${BASE}/cycles/complete`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body:    JSON.stringify({ pondId: activePond?._id, ...data }),
+    });
+    const result = await res.json();
+    if (!result.success) throw new Error(result.message);
+    fetchAllPonds();
+    return result;
+  };
+
+  const getCycleHistory = async (pondId) => {
+    const token = getToken();
+    const res   = await fetch(`${BASE}/cycles/${pondId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  };
+
+  // ── Sensor History (for charts) ────────────────────────────────────────────
+  const getSensorHistory = async (pondId, days = 7) => {
+    const token = getToken();
+    const res   = await fetch(`${BASE}/waterlog/${pondId}?days=${days}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.json();
+  };
+
   return (
     <PondContext.Provider value={{
       ponds, activePond, switchPond,
       createPond, createPondFull, deletePond, fetchAllPonds,
       sensorData, farmConfig, pondConfig, brain,
       doc, updatePond, logs, addLog, loading,
+      logAbwSample, getAbwHistory,
+      logMortality, getMortalityHistory,
+      completeCycle, getCycleHistory,
+      getSensorHistory,
     }}>
       {children}
     </PondContext.Provider>

@@ -98,3 +98,21 @@ exports.updatePond = async (req, res) => {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
+// ── PATCH /api/pond/:id — partial update from Setup page ─────────────────────
+exports.patchPond = async (req, res) => {
+  try {
+    const pond = await Pond.findOne({ _id: req.params.id, userId: req.userId });
+    if (!pond)
+      return res.status(404).json({ success: false, message: "Pond not found." });
+
+    // Merge only the fields sent — don't overwrite everything
+    Object.assign(pond, req.body);
+    await pond.save();
+
+    res.json({ success: true, pond });
+  } catch (err) {
+    console.error("patchPond error:", err);
+    res.status(500).json({ success: false, message: err.message });
+  }
+};

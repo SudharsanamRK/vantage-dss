@@ -196,6 +196,37 @@ export function analyzePond(sensorInput, pondConfig = {}) {
 
   const survivalRate = Math.max(0, (100 - yieldLossFactor) * (healthScore / 100)).toFixed(1);
 
+  // ── 5. PREDICTIVE MORTALITY ALERT ───────────────────────────────────────────
+  // Uses sensor history array if passed in config (c.sensorHistory = [{do, ammonia}])
+  const predictiveAlerts = [];
+  if (Array.isArray(c.sensorHistory) && c.sensorHistory.length >= 3) {
+    const recent = c.sensorHistory.slice(-5); // last 5 readings
+
+    // DO trending down — check last 3 consecutive below 5.0
+    const lowDoReadings = recent.filter(r => r.do != null && r.do < 5.0);
+    if (lowDoReadings.length >= 3) {
+      predictiveAlerts.push("PREDICTIVE: DO has been below 5.0 mg/L for 3+ readings — mortality risk rising.");
+    }
+
+    // Ammonia trending up — compare first and last of recent window
+    const ammoniaVals = recent.map(r => r.ammonia).filter(v => v != null);
+    if (ammoniaVals.length >= 3) {
+      const trend = ammoniaVals[ammoniaVals.length - 1] - ammoniaVals[0];
+      if (trend > 0.05) {
+        predictiveAlerts.push(`PREDICTIVE: Ammonia trending up (+${trend.toFixed(2)} ppm over last ${ammoniaVals.length} readings) — intervene before threshold breach.`);
+      }
+    }
+
+    // pH drifting out of range
+    const phVals = recent.map(r => r.ph).filter(v => v != null);
+    if (phVals.length >= 2) {
+      const phDrift = Math.abs(phVals[phVals.length - 1] - phVals[0]);
+      if (phDrift > 0.5) {
+        predictiveAlerts.push(`PREDICTIVE: pH shifted ${phDrift.toFixed(1)} units in recent readings — check buffering capacity.`);
+      }
+    }
+  }
+
   return {
     // Health
     healthScore:         Math.max(0, healthScore),
@@ -205,6 +236,7 @@ export function analyzePond(sensorInput, pondConfig = {}) {
     alerts,
     warnings,
     treatments,
+    predictiveAlerts,
     status: healthScore > 75 ? "Optimal" : healthScore > 45 ? "Warning" : "Critical",
 
     // Feeding

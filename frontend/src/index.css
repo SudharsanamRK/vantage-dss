@@ -4,7 +4,6 @@
 
 @layer base {
   body {
-    /* Pure, clean background with a very subtle professional grid */
     @apply bg-slate-50 text-slate-800 font-mono antialiased;
     background-image: 
       radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 80%),
@@ -14,7 +13,6 @@
   }
 }
 
-/* Updated for White Theme */
 .glass-panel {
   @apply bg-white border border-slate-200 shadow-sm shadow-slate-200/50 backdrop-blur-md;
 }
@@ -25,3 +23,30 @@
 
 .custom-scrollbar::-webkit-scrollbar { width: 6px; }
 .custom-scrollbar::-webkit-scrollbar-thumb { @apply bg-slate-300 rounded-full; }
+
+/* ── Spatial Map animations ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Dark Mode ── */
+.dark body {
+  @apply bg-slate-900 text-slate-100;
+  background-image: 
+    linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px);
+}
+.dark .bg-white          { background-color: #1e293b !important; }
+.dark .bg-slate-50       { background-color: #1a2535 !important; }
+.dark .bg-\[#f8f9fa\]    { background-color: #0f172a !important; }
+.dark .bg-\[#f3f6f9\]    { background-color: #0f172a !important; }
+.dark .border-slate-200  { border-color: #334155 !important; }
+.dark .border-slate-100  { border-color: #1e293b !important; }
+.dark .text-slate-800    { color: #e2e8f0 !important; }
+.dark .text-slate-700    { color: #cbd5e1 !important; }
+.dark .text-slate-600    { color: #94a3b8 !important; }
+.dark .text-slate-500    { color: #64748b !important; }
+.dark .text-slate-900    { color: #f1f5f9 !important; }
+.dark header.bg-white    { background-color: #1e293b !important; }
+.dark aside              { background-color: #0f172a !important; border-color: #1e293b !important; }
