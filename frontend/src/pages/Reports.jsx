@@ -8,7 +8,6 @@ import {
   Trash2, Leaf, Clock, CheckCircle2,
 } from "lucide-react";
 
-// ─── Constants ─────────────────────────────────────────────────────────────────
 const STORAGE_KEY = "fathom_logbook_v2";
 const STARRED_KEY = "fathom_logbook_starred_v2";
 
@@ -31,7 +30,6 @@ const STATUS_CFG = {
   Auto:     { cls:"bg-violet-100 text-violet-800 border-violet-300" },
 };
 
-// ─── Helpers ───────────────────────────────────────────────────────────────────
 const fmt      = (v, fb = "—") => (v == null || v === "") ? fb : v;
 const nowTime  = () => new Date().toLocaleTimeString("en-IN", { hour:"2-digit", minute:"2-digit", hour12:true });
 const todayFmt = () => new Date().toLocaleDateString("en-IN", { day:"2-digit", month:"short", year:"numeric" });
@@ -39,23 +37,21 @@ const todayISO = () => new Date().toISOString().split("T")[0];
 
 function classifyLog(log) {
   const t = (log.type || "").toLowerCase();
-  if (t.includes("feed") || t.includes("ration"))                                          return "Feeding";
+  if (t.includes("feed") || t.includes("ration"))                                       return "Feeding";
   if (t.includes("do") || t.includes("oxygen") || t.includes("water") ||
-      t.includes("ph") || t.includes("ammonia") || t.includes("temp"))                    return "Water Quality";
+      t.includes("ph") || t.includes("ammonia") || t.includes("temp"))                 return "Water Quality";
   if (t.includes("health") || t.includes("alert") || t.includes("intervention") ||
-      t.includes("aeration") || t.includes("mortality"))                                   return "Health";
-  if (t.includes("harvest") || t.includes("biomass"))                                     return "Harvest";
-  if (t.includes("cost") || t.includes("economic") || t.includes("revenue"))             return "Economics";
+      t.includes("aeration") || t.includes("mortality"))                                return "Health";
+  if (t.includes("harvest") || t.includes("biomass"))                                  return "Harvest";
+  if (t.includes("cost") || t.includes("economic") || t.includes("revenue"))          return "Economics";
   if (t.includes("task") || t.includes("sample") || t.includes("inspect") ||
-      t.includes("maintenance"))                                                            return "Maintenance";
+      t.includes("maintenance"))                                                         return "Maintenance";
   return "System";
 }
 
-// ─── localStorage ──────────────────────────────────────────────────────────────
 const loadLS = (key, fb) => { try { const r = localStorage.getItem(key); return r ? JSON.parse(r) : fb; } catch { return fb; } };
 const saveLS = (key, v)  => { try { localStorage.setItem(key, JSON.stringify(v)); } catch {} };
 
-// ─── Build system entries ──────────────────────────────────────────────────────
 function buildSystemEntries(logs, brain, sensorData, activePond, doc) {
   const sd = sensorData || {};
   const b  = brain      || {};
@@ -64,7 +60,7 @@ function buildSystemEntries(logs, brain, sensorData, activePond, doc) {
   const out  = [];
 
   out.push({ id:"SYS-WQ", iso, date, time, category:"Water Quality", title:"Water quality snapshot",
-    details:`DO: ${fmt(sd.do)} mg/L · Temp: ${fmt(sd.temp)}°C · pH: ${fmt(sd.ph)} · NH₃: ${fmt(sd.ammonia)} ppm · Salinity: ${fmt(sd.salinity)} ppt`,
+    details:`DO: ${fmt(sd.do)} mg/L · Temp: ${fmt(sd.temp)}°C · pH: ${fmt(sd.ph)} · NH3: ${fmt(sd.ammonia)} ppm · Salinity: ${fmt(sd.salinity)} ppt`,
     pond, user:"Vantage DSS", status:"Auto", source:"auto", starred:false });
 
   if (doc > 0) out.push({ id:"SYS-DOC", iso, date, time:"06:00 AM", category:"System", title:`Day ${doc} of culture`,
@@ -87,7 +83,6 @@ function buildSystemEntries(logs, brain, sensorData, activePond, doc) {
   return out;
 }
 
-// ─── CSV Export ────────────────────────────────────────────────────────────────
 function doExport(entries, pondLabel) {
   const h = ["ID","Date","Time","Category","Title","Details","Pond","Status","User","Source"];
   const rows = entries.map(e => [e.id, e.date, e.time, e.category,
@@ -101,7 +96,6 @@ function doExport(entries, pondLabel) {
   URL.revokeObjectURL(url);
 }
 
-// ─── Live Clock ────────────────────────────────────────────────────────────────
 function LiveClock() {
   const [time, setTime] = useState(nowTime());
   useEffect(() => { const id = setInterval(() => setTime(nowTime()), 10000); return () => clearInterval(id); }, []);
@@ -113,7 +107,6 @@ function LiveClock() {
   );
 }
 
-// ─── Animated counter ──────────────────────────────────────────────────────────
 function Counter({ value, color }) {
   return (
     <AnimatePresence mode="wait">
@@ -127,7 +120,6 @@ function Counter({ value, color }) {
   );
 }
 
-// ─── Stats Strip ───────────────────────────────────────────────────────────────
 function StatsStrip({ entries }) {
   const s = useMemo(() => ({
     total:    entries.length,
@@ -157,7 +149,6 @@ function StatsStrip({ entries }) {
   );
 }
 
-// ─── Quick Log Bar ─────────────────────────────────────────────────────────────
 function QuickLogBar({ onAdd, activePond }) {
   const [text,    setText]    = useState("");
   const [cat,     setCat]     = useState("Water Quality");
@@ -185,7 +176,6 @@ function QuickLogBar({ onAdd, activePond }) {
       transition={{ duration:0.5 }}
       className="border border-slate-200 shadow-sm overflow-hidden">
       <div className="flex items-stretch">
-        {/* Category selector */}
         <div className={`flex items-center gap-2 px-3 border-r border-slate-200 shrink-0 transition-colors ${catCfg.light}`}>
           <catCfg.icon size={12} className={catCfg.text} />
           <select value={cat} onChange={e => setCat(e.target.value)}
@@ -193,13 +183,11 @@ function QuickLogBar({ onAdd, activePond }) {
             {Object.keys(CATEGORIES).map(k => <option key={k} value={k}>{k}</option>)}
           </select>
         </div>
-
-        {/* Text input */}
         <div className="flex-1 flex items-center gap-2 px-4">
           <span className={`w-1.5 h-1.5 rounded-full shrink-0 transition-colors ${flashed ? "bg-green-500" : "bg-slate-300"}`} />
           <input ref={inputRef} type="text" value={text}
             onChange={e => setText(e.target.value)} onKeyDown={onKey}
-            placeholder="Log an observation, measurement, or event — press Enter to save…"
+            placeholder="Log an observation, measurement, or event — press Enter to save..."
             className="flex-1 bg-transparent text-xs font-mono text-slate-800 placeholder-slate-400 py-3 focus:outline-none" />
           <AnimatePresence>
             {text && (
@@ -210,15 +198,11 @@ function QuickLogBar({ onAdd, activePond }) {
             )}
           </AnimatePresence>
         </div>
-
-        {/* Submit button */}
         <motion.button whileTap={{ scale:0.96 }} onClick={submit} disabled={!text.trim()}
           className="flex items-center gap-1.5 bg-slate-900 hover:bg-green-700 disabled:bg-slate-100 disabled:text-slate-300 disabled:cursor-not-allowed text-white text-[9px] font-black uppercase tracking-widest px-5 transition-colors shrink-0">
           <Plus size={11} /> Log
         </motion.button>
       </div>
-
-      {/* Flash bar */}
       <AnimatePresence>
         {flashed && (
           <motion.div initial={{ height:0, opacity:0 }} animate={{ height:"auto", opacity:1 }} exit={{ height:0, opacity:0 }}
@@ -233,7 +217,6 @@ function QuickLogBar({ onAdd, activePond }) {
   );
 }
 
-// ─── Quick Templates ───────────────────────────────────────────────────────────
 function QuickTemplates({ onAdd, activePond }) {
   const [justAdded, setJustAdded] = useState(null);
   const templates = [
@@ -269,7 +252,6 @@ function QuickTemplates({ onAdd, activePond }) {
   );
 }
 
-// ─── Date Separator ────────────────────────────────────────────────────────────
 function DateSeparator({ date, count }) {
   const isToday = date === todayFmt();
   return (
@@ -288,7 +270,6 @@ function DateSeparator({ date, count }) {
   );
 }
 
-// ─── Timeline Entry ────────────────────────────────────────────────────────────
 function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
   const [expanded, setExpanded] = useState(entry.status === "Critical" || entry.status === "Warning");
   const cat    = CATEGORIES[entry.category] || CATEGORIES["System"];
@@ -305,7 +286,6 @@ function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
       transition={{ type:"spring", stiffness:380, damping:32 }}
       className="relative flex gap-3 group mb-3">
 
-      {/* Spine dot + line */}
       <div className="flex flex-col items-center shrink-0 w-6 mt-1.5">
         <motion.div
           initial={isNew ? { scale:0, opacity:0 } : false}
@@ -319,24 +299,17 @@ function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
         <div className="w-px flex-1 bg-slate-200 mt-1" />
       </div>
 
-      {/* Card body */}
       <div className={`flex-1 border transition-all duration-150 overflow-hidden
         ${isCrit ? "border-red-200 bg-red-50/60"   :
           isWarn ? "border-amber-200 bg-amber-50/40" :
                    "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"}`}>
-
         <div className={`h-0.5 w-full ${cat.color}`} />
-
         <div className="p-3">
           <div className="flex items-start gap-2.5">
-
-            {/* Icon pill */}
             <div className={`p-1.5 border shrink-0 mt-0.5 ${cat.light}`}>
               <Icon size={10} className={cat.text} />
             </div>
-
             <div className="flex-1 min-w-0">
-              {/* Title row */}
               <div className="flex items-start justify-between gap-2">
                 <div className="flex items-center gap-2 flex-wrap min-w-0">
                   <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 border ${cat.light} ${cat.text}`}>
@@ -348,8 +321,6 @@ function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
                   </p>
                   {entry.starred && <Star size={9} className="fill-amber-400 text-amber-400 shrink-0" />}
                 </div>
-
-                {/* Actions */}
                 <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
                   <motion.button whileTap={{ scale:0.8 }} onClick={() => onStar(entry.id)}
                     className={`p-1.5 rounded transition-colors
@@ -370,8 +341,6 @@ function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
                   )}
                 </div>
               </div>
-
-              {/* Meta */}
               <div className="flex items-center gap-2.5 mt-1.5 flex-wrap">
                 <span className="font-mono text-[9px] text-slate-400">{entry.time}</span>
                 <span className="text-[8px] text-slate-400 font-bold uppercase">{entry.pond}</span>
@@ -388,8 +357,6 @@ function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
                   )}
                 </AnimatePresence>
               </div>
-
-              {/* Expandable details */}
               <AnimatePresence initial={false}>
                 {expanded && entry.details && (
                   <motion.div
@@ -405,8 +372,6 @@ function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
                   </motion.div>
                 )}
               </AnimatePresence>
-
-              {/* Expand nudge */}
               {!expanded && !isCrit && !isWarn && entry.details && (
                 <button onClick={() => setExpanded(true)}
                   className="mt-1 text-[8px] text-slate-400 hover:text-slate-600 font-black uppercase tracking-wider flex items-center gap-0.5 transition-colors">
@@ -421,11 +386,10 @@ function TimelineEntry({ entry, onStar, onDelete, isManual, isNew }) {
   );
 }
 
-// ─── Main Logbook ──────────────────────────────────────────────────────────────
-export default function Logbook() {
+// ── export name MUST be "Reports" to match App.jsx import ──────────────────────
+export default function Reports() {
   const { brain, sensorData, farmConfig, activePond, logs, addLog, doc } = usePond();
 
-  // ── Persistent manual entries ──────────────────────────────────────────────
   const [manualEntries, setManualEntries] = useState(() => loadLS(STORAGE_KEY, []));
   const [newIds,        setNewIds]        = useState(new Set());
 
@@ -442,7 +406,6 @@ export default function Logbook() {
     setManualEntries(prev => prev.filter(e => e.id !== id));
   }, []);
 
-  // ── Starred ────────────────────────────────────────────────────────────────
   const [starred, setStarred] = useState(() => new Set(loadLS(STARRED_KEY, [])));
   const toggleStar = useCallback((id) => {
     setStarred(prev => {
@@ -453,7 +416,6 @@ export default function Logbook() {
     });
   }, []);
 
-  // ── System entries ─────────────────────────────────────────────────────────
   const systemEntries = useMemo(() =>
     buildSystemEntries(logs, brain, sensorData, activePond, doc),
     [logs, brain, sensorData, activePond, doc]
@@ -465,7 +427,6 @@ export default function Logbook() {
     [manualEntries, systemEntries, starred]
   );
 
-  // ── Filters ────────────────────────────────────────────────────────────────
   const [filterCat,    setFilterCat]    = useState("ALL");
   const [filterStatus, setFilterStatus] = useState("ALL");
   const [search,       setSearch]       = useState("");
@@ -491,8 +452,6 @@ export default function Logbook() {
 
   return (
     <div className="min-h-full bg-[#f3f6f9] font-sans text-slate-800">
-
-      {/* ── Header ──────────────────────────────────────────────────────────── */}
       <div className="bg-white border-b border-slate-200 px-6 lg:px-8 py-5">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
@@ -512,7 +471,7 @@ export default function Logbook() {
           <div className="flex items-center gap-2">
             <div className="relative">
               <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search…"
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Search..."
                 className="pl-8 pr-3 py-2 border border-slate-200 bg-slate-50 text-[11px] font-mono focus:outline-none focus:border-green-600 focus:bg-white transition-colors w-40" />
             </div>
             <select value={filterStatus} onChange={e => setFilterStatus(e.target.value)}
@@ -529,20 +488,13 @@ export default function Logbook() {
       </div>
 
       <div className="max-w-[1400px] mx-auto px-6 lg:px-8 py-6 space-y-4">
-
-        {/* Stats */}
         <StatsStrip entries={allEntries} />
-
-        {/* Quick log */}
         <QuickLogBar onAdd={handleAdd} activePond={activePond} />
-
-        {/* Templates */}
         <div>
           <p className="text-[8px] font-black uppercase tracking-widest text-slate-400 mb-2">Quick templates</p>
           <QuickTemplates onAdd={handleAdd} activePond={activePond} />
         </div>
 
-        {/* Category filter pills */}
         <div className="flex flex-wrap gap-1.5 items-center">
           {["ALL", "STARRED", ...Object.keys(CATEGORIES)].map(k => {
             const cat    = CATEGORIES[k];
@@ -571,7 +523,6 @@ export default function Logbook() {
           </AnimatePresence>
         </div>
 
-        {/* Timeline */}
         <AnimatePresence mode="wait">
           {grouped.length === 0 ? (
             <motion.div key="empty" initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
@@ -601,7 +552,6 @@ export default function Logbook() {
                   </div>
                 </div>
               ))}
-
               <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} transition={{ delay:0.25 }}
                 className="flex items-center gap-3 py-6">
                 <div className="flex-1 h-px bg-slate-200" />
@@ -611,7 +561,6 @@ export default function Logbook() {
             </motion.div>
           )}
         </AnimatePresence>
-
       </div>
     </div>
   );

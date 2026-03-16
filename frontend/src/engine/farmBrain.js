@@ -255,6 +255,11 @@ export function analyzePond(sensorInput, pondConfig = {}) {
     netProfit:       toL(netProfit),
     roi:             `${roi}%`,
     projectedRevenue: toL(grossRevenue),
+    // Raw rupee values for Economics page calculations
+    grossRevenueRaw: Math.round(grossRevenue),
+    totalCostRaw:    Math.round(totalCost),
+    netProfitRaw:    Math.round(netProfit),
+    roiRaw:          parseFloat(roi),
     costBreakdown: {
       seed:        Math.round(totalSeedCost),
       feed:        Math.round(totalFeedCost),
