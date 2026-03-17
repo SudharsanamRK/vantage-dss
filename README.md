@@ -6,7 +6,7 @@ This project is a high-performance, operational Decision Support System (DSS) de
 # Output Modules
 
 **1. Dashboard**
-> Serves as the central mission control for each pond — displaying real-time sensor telemetry (DO, Ammonia, Temperature, pH), Days of Culture (DOC), Biomass Estimate, Health Score, Projected Revenue, and FATHOM_CORE logic output including Health Monitor and Feeding Advisor status. Weather integration via Open-Meteo is also shown inline.
+> Serves as the central mission control for each pond displaying real-time sensor telemetry (DO, Ammonia, Temperature, pH), Days of Culture (DOC), Biomass Estimate, Health Score, Projected Revenue, and FATHOM_CORE logic output including Health Monitor and Feeding Advisor status. Weather integration via Open-Meteo is also shown inline.
 
 <img width="1918" height="868" alt="image" src="https://github.com/user-attachments/assets/044b5649-edcd-4365-8c15-6b66af33bf67" />
 
@@ -21,7 +21,7 @@ This project is a high-performance, operational Decision Support System (DSS) de
 ---
 
 **3. Feeding Advisor, BIO-LOGIC PROTOCOL**
-> Utilizes the FeedEngine's bio-logic algorithms to calculate precise adaptive feed requirements based on current water quality, biomass, and average body weight. Displays real-time vitals, metabolic efficiency over a 24-hour cycle, and triggers critical alerts (e.g., CRITICAL OXYGEN EVENT — feed suspended) when water conditions are unsafe, optimizing FCR and preventing waste.
+> Utilizes the FeedEngine's bio-logic algorithms to calculate precise adaptive feed requirements based on current water quality, biomass, and average body weight. Displays real-time vitals, metabolic efficiency over a 24-hour cycle, and triggers critical alerts (e.g., CRITICAL OXYGEN EVENT - feed suspended) when water conditions are unsafe, optimizing FCR and preventing waste.
 
 <img width="1919" height="864" alt="image" src="https://github.com/user-attachments/assets/fbfaad23-585e-4d8e-814d-c21be6114813" />
 
@@ -37,7 +37,7 @@ This project is a high-performance, operational Decision Support System (DSS) de
 ---
 
 **5. Biological Diagnostics**
-> Functions as a digital health doctor — analyzing water parameters (DO, Temperature, pH, Ammonia) against species-specific thresholds to generate a Health Index (0–100), Mortality Risk %, DO Status, Active Alerts, Survival Estimate, and a 6-Hour Risk Forecast. Provides species-specific advisories (e.g., salinity warnings for Vannamei culture).
+> Functions as a digital health doctor - analyzing water parameters (DO, Temperature, pH, Ammonia) against species-specific thresholds to generate a Health Index (0–100), Mortality Risk %, DO Status, Active Alerts, Survival Estimate, and a 6-Hour Risk Forecast. Provides species-specific advisories (e.g., salinity warnings for Vannamei culture).
 
 <img width="1916" height="869" alt="image" src="https://github.com/user-attachments/assets/f758ba57-7dd7-4c9d-b69e-0a091972cf33" />
 
@@ -51,7 +51,7 @@ This project is a high-performance, operational Decision Support System (DSS) de
 
 ---
 
-**7. Task Manager — Daily Ops**
+**7. Task Manager, Daily Ops**
 > Manages daily farm operations through a structured task board. Tracks tasks by status (Pending, In Progress, Completed, Overdue) across categories (Water Quality, Feeding, Sampling, Maintenance). Displays Today's Schedule with task priorities and a history log for audit and compliance purposes.
 
 <img width="1919" height="863" alt="image" src="https://github.com/user-attachments/assets/2373ce10-73a3-40ff-b417-e26a1c8a42bf" />
@@ -67,7 +67,7 @@ This project is a high-performance, operational Decision Support System (DSS) de
 ---
 
 **9. Pond Setup, Configuration Wizard**
-> Handles the technical foundation of the farm OS through a structured multi-section configuration panel. Operators define Farm & Pond Details, Stocking Information, Water Quality Baseline, Feed & Management preferences, Financial Inputs, and Alert Thresholds — all editable in one place via Edit Mode.
+> Handles the technical foundation of the farm OS through a structured multi-section configuration panel. Operators define Farm & Pond Details, Stocking Information, Water Quality Baseline, Feed & Management preferences, Financial Inputs, and Alert Thresholds all editable in one place via Edit Mode.
 
 <img width="1919" height="861" alt="image" src="https://github.com/user-attachments/assets/08cceb9e-9fe9-45c0-ad3e-50cfbe5064b8" />
 
